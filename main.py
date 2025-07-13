@@ -1,11 +1,29 @@
-
 from fastapi import FastAPI, HTTPException
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
-from fastapi.responses import FileResponse
 import json, os
 
 app = FastAPI()
+
+# Patch OpenAPI schema with server URL
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Master GPT Archive",
+        version="1.0.0",
+        description="Store and retrieve characters, lore, and timeline events.",
+        routes=app.routes,
+    )
+    openapi_schema["servers"] = [
+        {"url": "https://chatgpt-code.onrender.com"}
+    ]
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 CHARACTER_FILE = "storage/characters.json"
 LORE_FILE = "storage/lore.json"
@@ -36,11 +54,13 @@ class TimelineEvent(BaseModel):
     date: str
     event: str
 
-# Endpoints
-
 @app.get("/", include_in_schema=False)
 def root():
     return {"status": "Master GPT Archive is alive."}
+
+@app.get("/.well-known/ai-plugin.json", include_in_schema=False)
+def plugin_manifest():
+    return FileResponse("plugin/ai-plugin.json", media_type="application/json")
 
 @app.post("/character")
 def add_character(char: Character):
@@ -92,7 +112,3 @@ def add_event(event: TimelineEvent):
 @app.get("/timeline")
 def get_timeline():
     return sorted(load_data(TIMELINE_FILE), key=lambda x: x["date"])
-
-@app.get("/.well-known/ai-plugin.json", include_in_schema=False)
-def plugin_manifest():
-    return FileResponse(".well-known/ai-plugin.json", media_type="application/json")
