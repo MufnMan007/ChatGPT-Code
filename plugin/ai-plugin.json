@@ -1,0 +1,15 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Master GPT Archive",
+  "name_for_model": "master_gpt_archive",
+  "description_for_model": "Access and store characters, lore, and events for a D&D campaign.",
+  "description_for_human": "Query your extended D&D story memory.",
+  "auth": { "type": "none" },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:8000/openapi.json"
+  },
+  "logo_url": "http://example.com/logo.png",
+  "contact_email": "support@example.com",
+  "legal_info_url": "http://example.com/legal"
+}
