@@ -3,13 +3,13 @@
   "name_for_human": "Master GPT Archive",
   "name_for_model": "master_gpt_archive",
   "description_for_model": "Access and store characters, lore, and events for a D&D campaign.",
-  "description_for_human": "Query your extended D&D story memory.",
+  "description_for_human": "Extended memory storage for your D&D campaigns and Master GPT.",
   "auth": { "type": "none" },
   "api": {
     "type": "openapi",
-    "url": "http://localhost:8000/openapi.json"
+    "url": "https://chatgpt-code.onrender.com/openapi.json"
   },
-  "logo_url": "http://example.com/logo.png",
+  "logo_url": "https://chatgpt-code.onrender.com/logo.png",
   "contact_email": "support@example.com",
-  "legal_info_url": "http://example.com/legal"
+  "legal_info_url": "https://chatgpt-code.onrender.com/legal"
 }

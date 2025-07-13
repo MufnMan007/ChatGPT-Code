@@ -1,21 +1,10 @@
-# Master GPT Archive
+# Master GPT Archive (ZERO SETUP)
 
-An OpenAI-compatible plugin to store and retrieve D&D character data, lore, and timeline events.
+✅ No edits. No renaming. No folder tweaking.  
+Just upload to GitHub and deploy to Render.
 
-## Run locally
+### How to deploy:
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn main:app --host 0.0.0.0 --port 8000`
 
-```bash
-pip install fastapi uvicorn
-uvicorn main:app --reload
-```
-
-## Endpoints
-
-- `POST /character` – Add or update a character
-- `GET /character/{name}`
-- `GET /characters`
-- `POST /lore`
-- `GET /lore/{topic}`
-- `GET /lore`
-- `POST /timeline`
-- `GET /timeline`
+You're done. It just works with OpenAI Actions.

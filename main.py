@@ -1,6 +1,8 @@
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
+from fastapi.responses import FileResponse
 import json, os
 
 app = FastAPI()
@@ -35,6 +37,11 @@ class TimelineEvent(BaseModel):
     event: str
 
 # Endpoints
+
+@app.get("/", include_in_schema=False)
+def root():
+    return {"status": "Master GPT Archive is alive."}
+
 @app.post("/character")
 def add_character(char: Character):
     data = load_data(CHARACTER_FILE)
@@ -85,3 +92,7 @@ def add_event(event: TimelineEvent):
 @app.get("/timeline")
 def get_timeline():
     return sorted(load_data(TIMELINE_FILE), key=lambda x: x["date"])
+
+@app.get("/.well-known/ai-plugin.json", include_in_schema=False)
+def plugin_manifest():
+    return FileResponse(".well-known/ai-plugin.json", media_type="application/json")
