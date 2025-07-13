@@ -2,24 +2,25 @@ from fastapi import FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
 import json, os
 
 app = FastAPI()
 
-# Patch OpenAPI schema with server URL
+# Ensure storage folder exists
+os.makedirs("storage", exist_ok=True)
+
+# Patch OpenAPI with correct server
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="Master GPT Archive",
         version="1.0.0",
-        description="Store and retrieve characters, lore, and timeline events.",
+        description="Store and retrieve characters, lore, and events for D&D.",
         routes=app.routes,
     )
-    openapi_schema["servers"] = [
-        {"url": "https://chatgpt-code.onrender.com"}
-    ]
+    openapi_schema["servers"] = [{"url": "https://chatgpt-code.onrender.com"}]
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
@@ -62,53 +63,56 @@ def root():
 def plugin_manifest():
     return FileResponse("plugin/ai-plugin.json", media_type="application/json")
 
-@app.post("/character")
-def add_character(char: Character):
+# Character routes
+@app.post("/save/char")
+def save_char(char: Character):
     data = load_data(CHARACTER_FILE)
     data = [c for c in data if c["name"].lower() != char.name.lower()]
     data.append(char.dict())
     save_data(CHARACTER_FILE, data)
     return {"message": "Character saved."}
 
-@app.get("/character/{name}")
-def get_character(name: str):
+@app.get("/load/char/{name}")
+def load_char(name: str):
     data = load_data(CHARACTER_FILE)
     for char in data:
         if char["name"].lower() == name.lower():
             return char
     raise HTTPException(status_code=404, detail="Character not found")
 
-@app.get("/characters")
-def list_characters():
+@app.get("/list/chars")
+def list_chars():
     return load_data(CHARACTER_FILE)
 
-@app.post("/lore")
-def add_lore(lore: Lore):
+# Lore routes
+@app.post("/save/lore")
+def save_lore(lore: Lore):
     data = load_data(LORE_FILE)
     data = [l for l in data if l["topic"].lower() != lore.topic.lower()]
     data.append(lore.dict())
     save_data(LORE_FILE, data)
     return {"message": "Lore saved."}
 
-@app.get("/lore/{topic}")
-def get_lore(topic: str):
+@app.get("/load/lore/{topic}")
+def load_lore(topic: str):
     data = load_data(LORE_FILE)
     for l in data:
         if l["topic"].lower() == topic.lower():
             return l
     raise HTTPException(status_code=404, detail="Lore not found")
 
-@app.get("/lore")
+@app.get("/list/lore")
 def list_lore():
     return load_data(LORE_FILE)
 
-@app.post("/timeline")
-def add_event(event: TimelineEvent):
+# Timeline routes
+@app.post("/save/event")
+def save_event(event: TimelineEvent):
     data = load_data(TIMELINE_FILE)
     data.append(event.dict())
     save_data(TIMELINE_FILE, data)
     return {"message": "Event saved."}
 
-@app.get("/timeline")
-def get_timeline():
+@app.get("/load/events")
+def load_events():
     return sorted(load_data(TIMELINE_FILE), key=lambda x: x["date"])

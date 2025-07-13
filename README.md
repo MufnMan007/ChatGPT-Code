@@ -1,1 +1,1 @@
-✅ Uses 'plugin/' instead of '.well-known/'. Safe for GitHub + Render. Fully OpenAI Actions compatible.
+✅ Final version with actual JSON storage files. No hidden folders. Just works.
